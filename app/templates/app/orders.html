@@ -2,20 +2,43 @@
 {% load static %}
 {% block title %}Buy Now{% endblock title %}
 {% block main-content %}
-<div class="container my-5">
- <div class="row">
- <h3>Welcome Sonam</h3>
-  <div class="col-sm-2 border-end">
-   <ul class="list-unstyled">
-    <li class="d-grid"><a href="{% url 'orders' %}" class="btn btn-primary">Orders</a></li>
-   </ul>
-  </div>
-  <div class="col-sm-9 offset-sm-1">
-   <div class="row">
-    <div class="col-sm-6">Order 1</div>
-    <div class="col-sm-6">Order 2</div>
-   </div>
-  </div>
- </div>
-</div>
-{% endblock main-content %}
+< class="container my-5">
+    <div class="row">
+        <h3>Welcome Sonam</h3>
+        <div class="col-sm-2 border-end">
+            <ul class="list-unstyled">
+                <li class="d-grid"><a href="{% url 'orders' %}" class="btn btn-primary">Orders</a></li>
+            </ul>
+        </div>
+        <div class="col-sm-9 offset-sm-1">
+            {% for op in order_placed %}
+            < class="row-shadow-sm mb-3">
+                <div id="col-sm-2">
+                    <img src="" alt="">
+                </div>
+                <div class="col-sm-7">
+                    <p>Product:{{op.product.title}}</p>
+                    <p>Quantity:{{op.product.quantity}}</p>
+                    <p>Price:{{op.product.total_cost}}</p>
+                </div>
+                <div id="col-sm-3 fw-bold">
+                    <p>Order Status:{{op.status}}</p>
+                    {% if op.status == 'Accepted' %}
+                    <div class="progress">
+                        <div class="progress-bar">
+
+                        </div>
+                        {% endif %}
+
+                        {% if op.status == "On the Way" %}
+                        <div class="progress">
+                            <div class="progress-bar"></div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+        </div>
+    </div>
+    {% endblock main-content %}

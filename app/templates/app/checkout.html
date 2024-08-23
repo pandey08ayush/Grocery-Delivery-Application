@@ -3,39 +3,81 @@
 {% block title %}Buy Now{% endblock title %}
 {% block main-content %}
 <div class="container">
- <div class="row mt-5">
-  <div class="col-sm-6">
-    <h4>Order Summary</h4>
-    <hr>
+  <div class="row mt-5">
+    <div class="col-sm-6">
+      <h4>Order Summary</h4>
+      <hr>
+      {% for cart in cart_item %}
       <div class="card mb-2">
         <div class="card-body">
-          <h5>Product: Product 1</h5>
-          <p>Quantity: 2</p>
-          <p class="fw-bold">Price: 100.00</p>
+          <h5>Product: {{cart.product.title}}</h5>
+          <p>Quantity: {{cart.quantity}}</p>
+          <!-- <p class="fw-bold">Price: {{cart.total_cost}}</p> -->
         </div>
       </div>
-    <small>Term and Condition: Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, ullam saepe! Iure optio repellat dolor velit, minus rem. Facilis cumque neque numquam laboriosam, accusantium adipisci nisi nihil in et quis?</small>
-  </div>
-  <div class="col-sm-4 offset-sm-1">
-    <h4>Select Shipping Address</h4>
-    <hr>
-    <form action="">
-      <div class="card">
-        <div class="card-body">
-        <h5>Sonam Kumari</h5>
-        <p>Hirapur Dhanbad Jharkahnd</p>
+      {% endfor %}
+      <p class="fw-bold">Total costs + RS.70 = {{total_amount}}</p>
+      <small>Term and Condition: Lorem ipsum dolor sit amet consectetur adipisicing elit. Mollitia, ullam saepe! Iure
+        optio repellat dolor velit, minus rem. Facilis cumque neque numquam laboriosam, accusantium adipisci nisi nihil
+        in et quis?</small>
+    </div>
+    <div class="col-sm-4 offset-sm-1">
+      <h4>Select Shipping Address</h4>
+      <hr>
+      <form action="/paymentdone">
+        {% for ad in add %}
+        <div class="card">
+          <div class="card-body">
+            <h5>{{ad.name}}</h5>
+            <p>{{ad.locality}},{{ad.city}},{{ad.state}},{{ad.zipcode}}</p>
+          </div>
+          
         </div>
-      </div>
-        <div class="form-check mt-2 mb-5">
-          <input class="form-check-input" type="radio" value="">
-          <label class="form-check-label fw-bold" for="">
-            Address: 1 </label>
+        {% endfor %}
+                <div class="form-check mt-2 mb-5">
+         
+          <input class="form-check-input" type="radio" name="custid" id="custadd{{forloop.counter}}" value="{{ad.id}}">
+          <label class="form-check-label fw-bold" for="custadd{{forloop.counter}}">
+            Address: {{forloop.counter}} </label>
         </div>
-        <div class="text-end">
-          <button type="submit" class="btn btn-warning mt-3 px-5 fw-bold">Continue</button>
-        </div>
+      
+         <div class="text-end">
+          <!-- <button type="submit" class="btn btn-warning mt-3 px-5 fw-bold">Continue</button> -->
+          <div id="paypal-button-container"></div>
+        </div> 
       </form>
     </div>
   </div>
 </div>
 {% endblock main-content %}
+
+{% block payment-gateway %}
+<script src="https://www.paypal.com/sdk/js?client-id=Ad6ZE0knxVgWe3dC7YndWmBy5jF2sfBw-E1si5fvXfI0H52F2nBgIENSOWla1ytX4W3w3me8nNdH6MLO&currency=USD"></script>
+
+<script>
+    // Render the PayPal button into #paypal-button-container
+    paypal.Buttons({
+
+        // Call your server to set up the transaction
+        createOrder: function(data, actions) {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                value:'{{total_amount}}'
+              }
+            }]
+           });
+        },
+
+        // Call your server to finalize the transaction
+        onApprove: function(data, actions) {
+          return actions.order.capture().then(function(details) {
+            alert("TRANSCATION COMPLETED BY" + details.payer.name.given_name+ '|');
+          });
+        }
+      }).render('#paypal-button-container');
+
+           
+      
+</script>
+{% endblock payment-gateway %}
